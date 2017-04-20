@@ -6,18 +6,25 @@ import matplotlib.pyplot as plt
 plt.switch_backend("TkAgg")
 
 def main():
-    numpy.set_printoptions(threshold=10000000)
+    np.set_printoptions(threshold=10000000)
 
     #define stream chunk
     chunk = 44100
 
     #open a wav format music
     f = wave.open("snowy_mono.wav","r")
-    tm = read("snowy_mono.wav")
+    timeMatrix = read("snowy_mono.wav")
     # tmFile = open("timeMatrix.txt",'wb')
     # numpy.savetxt(tmFile,tm[1])
     # tmFile.close()
-    plt.plot(tm[1])
+
+    # plt.plot(timeMatrix[1])
+    # plt.show()
+    signal = timeMatrix[1]
+    freqMatrix = np.fft.fft(signal[chunk*0:chunk*1])
+    magMatrix = np.absolute(freqMatrix)
+    phaseMatrix = np.angle(freqMatrix)
+    plt.plot(phaseMatrix)
     plt.show()
 
     #instantiate PyAudio
