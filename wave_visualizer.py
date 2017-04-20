@@ -1,7 +1,9 @@
 import pyaudio
 import wave
 from scipy.io.wavfile import read
-import numpy
+import numpy as np
+import matplotlib.pyplot as plt
+plt.switch_backend("TkAgg")
 
 def main():
     numpy.set_printoptions(threshold=10000000)
@@ -12,10 +14,12 @@ def main():
     #open a wav format music
     f = wave.open("snowy_mono.wav","r")
     tm = read("snowy_mono.wav")
-    tmFile = open("timeMatrix.txt",'wb')
-    numpy.savetxt(tmFile,tm[1])
-    tmFile.close()
-    #print(tm)
+    # tmFile = open("timeMatrix.txt",'wb')
+    # numpy.savetxt(tmFile,tm[1])
+    # tmFile.close()
+    plt.plot(tm[1])
+    plt.show()
+
     #instantiate PyAudio
     p = pyaudio.PyAudio()
     #open stream
