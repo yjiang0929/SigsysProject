@@ -4,17 +4,18 @@ from scipy.io.wavfile import read
 import numpy
 
 def main():
+    numpy.set_printoptions(threshold=10000000)
+
     #define stream chunk
     chunk = 44100
 
     #open a wav format music
-    f = wave.open("snowy.wav","r")
-    tm = read("snowy.wav")
-    tmFile = open("timeMatrix.txt",'w')
-    tempString = numpy.array_str(tm[1])
-    tmFile.write(tempString)
+    f = wave.open("snowy_mono.wav","r")
+    tm = read("snowy_mono.wav")
+    tmFile = open("timeMatrix.txt",'wb')
+    numpy.savetxt(tmFile,tm[1])
     tmFile.close()
-    print(tm)
+    #print(tm)
     #instantiate PyAudio
     p = pyaudio.PyAudio()
     #open stream
