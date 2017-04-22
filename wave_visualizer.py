@@ -27,7 +27,7 @@ def main():
     # plt.show()
 
     # Cast encoded signal to a playable .wav file
-    write("test.wav", 44100, encodedTimeSignal)
+    write("encoded.wav", 44100, encodedTimeSignal)
 
     # f = wave.open("snowy_mono.wav","r")
     # playMusic(f)
@@ -42,7 +42,7 @@ def matrixAppend(mat1, mat2):
 def phaseCode(timeSignal):
     signalLength = len(timeSignal)
 
-    num_blocks = 5  # n is the number of signal blocks
+    num_blocks = 10  # n is the number of signal blocks
     block_length = int(signalLength/num_blocks)  # l is the length of each signal block
     message_length = int(block_length/8)  # m is the lenght of the message
 
@@ -54,6 +54,9 @@ def phaseCode(timeSignal):
     encodedPhaseBlocks = np.array([])  # frequency blocks for the encoded signal
     encodedTimeBlocks = np.array([])  # time blocks for the encoded signal
     encodedFreqTotal = np.array([]) # full encoded frequency signal
+    encodedSignal = np.array([])
+    plt.plot(timeSignal)
+    plt.show()
 
     # separates timeSignal into n time blocks of length l each
     for x in range(num_blocks):
@@ -75,7 +78,6 @@ def phaseCode(timeSignal):
             previousMatrix = phaseMatrices[x-1]
             currentDelta = np.append(currentDelta, currentMatrix[y] - previousMatrix[y])
         phaseDeltas = matrixAppend(phaseDeltas, currentDelta)
-    print("Phase Difference Captured")
 
     # generates random message for the phase
     messagePhases = generateTestMessagePhases(block_length)
@@ -103,13 +105,15 @@ def phaseCode(timeSignal):
     for i in range(num_blocks):
         encodedFreqBlock = np.array([])
         for j in range(block_length):
-            encodedFreqBlock = np.append(encodedFreqBlock, magMatrices[i][j] * (math.cos(encodedPhaseBlocks[i][j])+ 1j * math.sin(encodedPhaseBlocks[i][j])))
-        encodedFreqTotal = np.append(encodedFreqTotal, encodedFreqBlock)
-    plt.plot(encodedFreqTotal)
-    plt.show()
+            encodedFreqBlock = np.append(encodedFreqBlock, magMatrices[i][j] * np.exp(1j*phaseMatrices[i][j]))
+        encodedFreqTotal = matrixAppend(encodedFreqTotal, encodedFreqBlock)
 
     # Inverse fourier transform back into time domain
-    encodedSignal = np.fft.ifft(encodedFreqTotal)
+    for i in range(num_blocks):
+        encodedTimeBlock = np.fft.ifft(encodedFreqTotal[i])
+        encodedSignal = np.append(encodedSignal, encodedTimeBlock)
+
+    # convert float number to int
     encodedSignal = np.int16(encodedSignal)
     plt.plot(encodedSignal)
     plt.show()
