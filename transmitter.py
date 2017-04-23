@@ -21,6 +21,7 @@ def main():
 
     #encode phase
     encodedTimeSignal = phaseCode(timeSignal)
+    print(len(encodedTimeSignal))
 
     # plt.plot(encodedTimeSignal)
     # plt.show()
@@ -43,7 +44,7 @@ def phaseCode(timeSignal):
 
     num_blocks = 10  # n is the number of signal blocks
     block_length = int(signalLength/num_blocks)  # l is the length of each signal block
-    message_length = int(block_length/8)  # m is the lenght of the message
+    print(block_length)
 
     timeBlocks = np.array([])  # the time domain version of each block
     freqBlocks = np.array([])  # the frequency content of each block
@@ -78,13 +79,18 @@ def phaseCode(timeSignal):
             currentDelta = np.append(currentDelta, currentMatrix[y] - previousMatrix[y])
         phaseDeltas = matrixAppend(phaseDeltas, currentDelta)
 
+    plt.plot(phaseMatrices[0])
+    plt.show()
+
     # generates random message for the phase
-    messagePhases = generateTestMessagePhases(block_length)
+    messagePhases = generateTestMessagePhases(block_length, 'Olin College of Engineering')
+    message_length = len(messagePhases)  # m is the lenght of the message
+    print(message_length/10)
 
     # puts message phase matrix into the first block
-    for i in range(0,message_length):
-        phaseMatrices[0][int(block_length/2)-message_length+i] = messagePhases[i]
-        phaseMatrices[0][int(block_length/2)+1+i] = -messagePhases[message_length-1-i]
+    for i in range(message_length):
+        phaseMatrices[0][int(block_length/2)-1-i] = -messagePhases[i]
+        phaseMatrices[0][int(block_length/2)+1+i] = messagePhases[i]
 
     # add phase difference to every other phase segment
     encodedPhaseBlocks = matrixAppend(encodedPhaseBlocks, phaseMatrices[0])
@@ -119,11 +125,19 @@ def phaseCode(timeSignal):
 
     return encodedSignal
 
-def generateTestMessagePhases(l):
+def generateTestMessagePhases(block_length, msg):
     messagePhases = np.array([])
 
-    for x in range(int(l/8)):
-        messagePhases = np.append(messagePhases, random.choice([math.pi/2,-math.pi/2]))
+    # encode the message to binary form
+    bin_msg = bin(int.from_bytes(msg.encode(),'big'))
+
+    for i in range(2,len(bin_msg)):
+        if bin_msg[i] == '1':
+            for j in range(10):
+                messagePhases = np.append(messagePhases, -math.pi/2)
+        else:
+            for j in range(10):
+                messagePhases = np.append(messagePhases, math.pi/2)
 
     return messagePhases
 
