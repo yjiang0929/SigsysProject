@@ -18,8 +18,7 @@ def main():
     #open a wav format music
     timeMatrix = read("snowy_clip.wav")
     timeSignal = timeMatrix[1]
-    # plt.plot(timeSignal)
-    # plt.show()
+
     #encode phase
     encodedTimeSignal = phaseCode(timeSignal)
 
